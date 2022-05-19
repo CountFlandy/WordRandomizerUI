@@ -16,12 +16,19 @@ CAN IT BE IMPROVED?:
 
 
 Yes.
+
 1: Textfile outputs could be actually organized, you know for sanity's sake.
+
 2: I'm sure my algorithims are bad. My math is possibly wrong. Not good at math, so double check it if you suspect something is off..
+
 3: Fix the freeze on pressing of the generate button (I assume this is because I'm doing all the calculations on some sort of UI thread?)
+
 4: Improve the write to file loop somehow
+
 5: Generate button can be clicked twice if the user is quick enough, causing the list to disapear and Cleanup() to be engaged. Could be fixed/improved to prevent this.
+
 6: Better UI elements could be added
+
 7: An actual Icon could be included, will get to that eventually.
 
 
