@@ -31,6 +31,8 @@ Yes.
 
 7: An actual Icon could be included, will get to that eventually.
 
+8: Word itteration process could likely be improved to take advantage of multiple threads, though I have zero idea how to do that.
+
 
 If you find any bugs please report them under issues, I'll try to get to them as I'm able to.
 
