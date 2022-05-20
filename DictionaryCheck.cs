@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using System.Reflection;
 
 namespace WordRandomizerUI
 {
@@ -18,7 +14,6 @@ namespace WordRandomizerUI
         public string EngDictionary(string engWordDic)
         {
             string[] engDic; //Make the array
-            //string folderLoc = Assembly.GetExecutingAssembly().Location;
             string folderLoc = AppDomain.CurrentDomain.BaseDirectory;
             string filePath = Path.Combine(folderLoc, "EnglishDic.txt");
             engDic = File.ReadAllLines(filePath);
@@ -35,21 +30,14 @@ namespace WordRandomizerUI
                 if (engWordDic == engDic[i])
                 {
                     correctWord = engDic[i];
-                    //i = dicLength;
-
                     engWordDic = correctWord;
                     return engWordDic;
                 }
-                //else if (i == dicLength)
-                //{
-                //    return "";
-                //}
                 else
                 {
                     i++;
                 }
             }
-
             engWordDic = correctWord;
             return engWordDic;
         }

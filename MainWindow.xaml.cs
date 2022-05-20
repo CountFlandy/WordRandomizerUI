@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,17 +17,15 @@ using System.Windows.Shapes;
 
 //TODO:
 //
-// Program temp freezes on button press.
 // Improve write to file loop
-// port WordGen to its own file possibly
-// Properly display the generated words in their textboxes AS IT OCCURS (It does now, only freezing prevents this?)
-// It is possible to click generate button twice, resulting in a fakeout after the first generation is finished
 
 namespace WordRandomizerUI
 {
     /// <summary>
     ///// Interaction logic for MainWindow.xaml
     ///// </summary>
+    ///
+
     public partial class MainWindow : Window
     {
         bool RealWordsCheck = false;
@@ -39,14 +38,10 @@ namespace WordRandomizerUI
         string userWord = "";
         bool generatedOnce = false;
         DictionaryCheck dicCheck = new();
-
         List<String> shuffleWordList = new();
         List<String> compareList = new();
         List<String> realWordList = new();
         List<String> fakeWordList = new();
-
-
-        //TODO: Outside of WordGen itterate through realWordList and fakeWord list to display them to the textboxes
 
         public MainWindow()
         {
@@ -82,115 +77,141 @@ namespace WordRandomizerUI
             compareList.Clear();
         }
 
-        public void WordGen(string userWord)
+        public async void WordGen(string userWord)
         {
-            List<String> wordCharList = new(); //basically a char string
-            int wordLength = userWord.Length; //Get length of word above
-            int timer = 0;
-            bool suddenlyBreak = false;
-            int wL = wordLength;
-            int mWL = minWordLength;
-            int maxPassesEqu = ((userWord.Length - mWL + 1) * userWord.Length * 26);
-            string compareString = "";
-            Random rnd = new();
-
-            compareList.Add(userWord); //To be done in MainWindow.xaml.cs
-            int k = (rnd.Next(0, 100));
-
-            for (int i = 0; i <= maxPassesEqu;)
+            try
             {
-                if (wordCharList.Count != wordLength)
+                await Task.Run(() =>
                 {
-                    wordCharList.Clear();
-                    for (int e = 0; e < wordLength; e++) //Add the user generated word to the list
-                    {
-                        wordCharList.Add(userWord.Substring(e, 1));
-                    }
-                }
-                for (int q = 0; q < 1;) //This part finds the "words"
-                {
-                    if (wordCharList.Count != wordLength)
-                    {
-                        wordCharList.Clear();
-                        for (int e = 0; e < wordLength; e++) //Add the user generated word to the list
-                        {
-                            wordCharList.Add(userWord.Substring(e, 1));
-                        }
-                    }
-                    wL = wordLength;
-                    mWL = minWordLength;
-                    timer++;
-                    if (timer > maxPassesEqu)
-                    { //just in case my math is wrong this is a safeway to abort it.
-                        suddenlyBreak = true;
-                        i = maxPassesEqu + 1;
-                        q = 2;
-                    }
+                    List<String> wordCharList = new(); //basically a char string
+                    int wordLength = userWord.Length; //Get length of word above
+                    int timer = 0;
+                    bool suddenlyBreak = false;
+                    int wL = wordLength;
+                    int mWL = minWordLength;
+                    int maxPassesEqu = ((userWord.Length - mWL + 1) * userWord.Length * 26);
+                    string compareString = "";
+                    Random rnd = new();
 
-                    while (wL > 1)
+                    compareList.Add(userWord); //To be done in MainWindow.xaml.cs
+                    int k = (rnd.Next(0, 100));
+
+                    for (int i = 0; i <= maxPassesEqu;)
                     {
-                        k = (rnd.Next(0, wL));
-                        wL--;
-                        string value = wordCharList[k];
-                        wordCharList[k] = wordCharList[wL];
-                        wordCharList[wL] = value;
-                    }
-                    wL = wordLength;
-                    int r = rnd.Next(mWL, wL);
-                    while (wL > r)
-                    {
-                        if (wordCharList.Count < mWL)
+                        if (wordCharList.Count != wordLength)
                         {
-                            q = 2;
+                            wordCharList.Clear();
+                            for (int e = 0; e < wordLength; e++) //Add the user generated word to the list
+                            {
+                                wordCharList.Add(userWord.Substring(e, 1));
+                            }
+                        }
+                        for (int q = 0; q < 1;) //This part finds the "words"
+                        {
+                            if (wordCharList.Count != wordLength)
+                            {
+                                wordCharList.Clear();
+                                for (int e = 0; e < wordLength; e++) //Add the user generated word to the list
+                                {
+                                    wordCharList.Add(userWord.Substring(e, 1));
+                                }
+                            }
+                            wL = wordLength;
+                            mWL = minWordLength;
+                            timer++;
+                            if (timer > maxPassesEqu)
+                        { //just in case my math is wrong this is a safeway to abort it.
                             suddenlyBreak = true;
+                            i = maxPassesEqu + 1;
+                            q = 2;
                         }
-                        else
-                        {
-                            wordCharList.RemoveAt(r);
-                            wL--;
-                        }
-                    }
-                    if (!compareList.Contains(wordCharList.ToString()))
-                    {
-                        q++;
-                    }
-                }
-                //Keep checking the generated word against the dictionary in WordGeneration.cs
-                if (suddenlyBreak == false)
-                {
-                    //Creates a string that is used when compared against compareWordList
-                    foreach (var item in wordCharList)
-                    {
-                        compareString += item;
-                    }
 
-                    if (compareString.Length <= wordLength && compareString.Length >= minWordLength && !compareList.Contains(compareString))
-                    {
-                        string dupeWord = "";
-                        dupeWord = compareString;
-                        DictionaryCheck localDict = new();
-                        dupeWord = localDict.EngDictionary(dupeWord);
+                            while (wL > 1)
+                            {
+                                k = (rnd.Next(0, wL));
+                                wL--;
+                                string value = wordCharList[k];
+                                wordCharList[k] = wordCharList[wL];
+                                wordCharList[wL] = value;
+                            }
+                            wL = wordLength;
+                            int r = rnd.Next(mWL, wL);
+                            while (wL > r)
+                            {
+                                if (wordCharList.Count < mWL)
+                                {
+                                    q = 2;
+                                    suddenlyBreak = true;
+                                }
+                                else
+                                {
+                                    wordCharList.RemoveAt(r);
+                                    wL--;
+                                }
+                            }
+                            if (!compareList.Contains(wordCharList.ToString()))
+                            {
+                                q++;
+                            }
+                        }
+                        //Keep checking the generated word against the dictionary in WordGeneration.cs
+                        if (suddenlyBreak == false)
+                        {
+                            //Creates a string that is used when compared against compareWordList
+                            foreach (var item in wordCharList)
+                            {
+                                compareString += item;
+                            }
 
-                        if (dupeWord == compareString)
-                        {
-                            realWordList.Add(compareString);
-                            TextBoxOutputRealWords.AppendText(compareString + "\n");
-                            realWordCount++;
+                            if (compareString.Length <= wordLength && compareString.Length >= minWordLength && !compareList.Contains(compareString))
+                            {
+                                string dupeWord = "";
+                                dupeWord = compareString;
+                                DictionaryCheck localDict = new();
+                                dupeWord = localDict.EngDictionary(dupeWord);
+
+                                if (dupeWord == compareString)
+                                {
+                                    realWordList.Add(compareString);
+                                    this.Dispatcher.Invoke(() =>
+                                    {
+                                        TextBoxOutputRealWords.AppendText(compareString + "\n");
+                                        LabelRealWords.Content = "Real Words(" + realWordCount + "):";
+                                    });
+                                    realWordCount++;
+                                }
+                                else
+                                {
+                                    fakeWordList.Add(compareString);
+                                    this.Dispatcher.Invoke(() =>
+                                    {
+                                        TextBoxOutputFakeWords.AppendText(compareString + "\n");
+                                        LabelFakeWords.Content = "Fake Words (" + fakeWordCount + "):";
+                                    });
+                                    fakeWordCount++;
+                                }
+                                //Add the string that passed the above comparision to the list so that it may no longer be taken.
+                                compareList.Add(compareString);
+                                i++;
+                            }
+                            compareString = "";
                         }
-                        else
-                        {
-                            fakeWordList.Add(compareString);
-                            TextBoxOutputFakeWords.AppendText(compareString + "\n");
-                            fakeWordCount++;
-                        }
-                        
-                        //Add the string that passed the above comparision to the list so that it may no longer be taken.
-                        compareList.Add(compareString);
-                        i++;
                     }
-                    compareString = "";
-                }
+                });
             }
+            catch(Exception ex)
+            { 
+            
+            }
+
+            LabelProgress.Content = "Lists Generated. See below.";
+            LabelFakeWords.Content = "Fake Words (" + fakeWordCount + "):";
+            LabelRealWords.Content = "Real Words(" + realWordCount + "):";
+            generatedOnce = true;
+            RadioYes.IsEnabled = true;
+            RadioNo.IsEnabled = true;
+            TextBoxUserInput.IsEnabled = true;
+            ButtonStart.IsEnabled = true;
         }
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
@@ -205,18 +226,8 @@ namespace WordRandomizerUI
             {
                 Cleanup();
             }
-            //Change this when word generation is done
             LabelProgress.Content = "Generating word lists, please wait";
             LabelLocation.Content = ""; //Change this to root directory
-            //Enable these after finished
-            RadioYes.IsEnabled = false;
-            RadioNo.IsEnabled = false;
-            TextBoxUserInput.IsEnabled = false;
-            ButtonStart.IsEnabled = false;
-
-            TextBoxOutputFakeWords.Text = "";
-            TextBoxOutputRealWords.Text = "";
-
             userWord = TextBoxUserInput.Text;
 
             //Do stuff below
@@ -225,18 +236,23 @@ namespace WordRandomizerUI
             {               
                 getExeLoc = getex.ExecutableLocation();
             }
-
+            else if(RadioYes.IsChecked == false && RadioNo.IsChecked == false)
+            {
+                RadioNo.IsChecked = true;
+            }
             if (userWord.Length < 5)
             {
                 LabelProgress.Content = "Error: Given word is smaller than 5. Try again.";
-                generatedOnce = true;
-                RadioYes.IsEnabled = true;
-                RadioNo.IsEnabled = true;
-                TextBoxUserInput.IsEnabled = true;
-                ButtonStart.IsEnabled = true;
             }
             else
             {
+                TextBoxOutputFakeWords.Text = "";
+                TextBoxOutputRealWords.Text = "";
+                RadioYes.IsEnabled = false;
+                RadioNo.IsEnabled = false;
+                TextBoxUserInput.IsEnabled = false;
+                ButtonStart.IsEnabled = false;
+
                 LabelProgress.Content = "Generating word lists, please wait";
                 wordLength = userWord.Length;
 
@@ -246,31 +262,17 @@ namespace WordRandomizerUI
                     File.Delete(userWord + ".txt");
                 }
                 StreamWriter writeFile = new StreamWriter(userWord + ".txt");
+                LabelLocation.Content = loc + userWord + ".txt";
 
+                //Runs on different thread than UI
                 WordGen(userWord);
+
                 //TODO: could be improved
                 foreach(var item in compareList)
                 {
                     writeFile.WriteLine(item.ToString());
                 }
-
-                LabelProgress.Content = "Lists Generated. See below.";
-                LabelFakeWords.Content = "Fake Words (" + fakeWordCount + "):";
-                LabelRealWords.Content = "Real Words(" + realWordCount + "):";
-
-                generatedOnce = true;
-                RadioYes.IsEnabled = true;
-                RadioNo.IsEnabled = true;
-                TextBoxUserInput.IsEnabled = true;
-                ButtonStart.IsEnabled = true;
-
-                
-                
-                
-
-                //Now print the finished textboxes stuff to writeFile/getExeLoc.txt
             }
-
         }
 
         private void RadioYes_Checked(object sender, RoutedEventArgs e)

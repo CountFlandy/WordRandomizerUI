@@ -1,8 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
-
-//TODO: Test to see if works
 
 namespace WordRandomizerUI
 {
@@ -15,16 +12,12 @@ namespace WordRandomizerUI
         public string ExecutableLocation()
         {
             string executableLoc = "";
-            //executableLoc = Assembly.GetExecutingAssembly().Location;
             executableLoc = AppDomain.CurrentDomain.BaseDirectory;
             if (File.Exists(executableLoc))
             {
                 File.Delete(executableLoc);
             }
-            //StreamWriter writeFile = new StreamWriter(executableLoc + ".txt");
-
             return executableLoc; 
         }
-
     }
 }

@@ -27,3 +27,13 @@
 - Created basic UI for application
 - Ported Dictionary & Dictionary Check to application from previous application
 - Application now checks the executable's location so it can write the results to a text file
+
+5/19/2022
+- Cleaned up a lot of code
+- Actually wrote text to textboxes
+- Fixed more bugs than I have fingers
+
+5/20/2022
+- Conveyed with the old gods and Sacrificed three sheep, and they willed an implementation of Threading. We have no idea how it works, but it does.
+- UI no longer freezes when pressing Start (Related to the above Sacrifice to the old ones)
+- You can no longer interact with the UI Elements while the program runs its word generation & comparing process (WordGen())
